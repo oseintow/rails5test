@@ -8,7 +8,6 @@ class WelcomeController < ApplicationController
   def initialize(product = Domain::Repositories::ProductRepository.new, product_variant = Domain::Repositories::ProductVariantRepository.new)
     @product = product
     @product_variant = product_variant
-    # @product.title
   end
 
   def index
@@ -22,7 +21,7 @@ class WelcomeController < ApplicationController
     # pro = Product.arel_table
     # products = Arel::Table.new(:products)
     # @pr = products.project(Arel.star)
-    # product_variant =ProductVariant.arel_table
+    # product_variant = ProductVariant.arel_table
     # @pr = Product.eager_load(:product_variants).where(product_variant[:name].matches('s3').or(product_variant[:product_id].eq(1)))
     @ps = Post.all
 
