@@ -12,8 +12,6 @@ class WelcomeController < ApplicationController
   end
 
   def index
-    # Rails.logger.debug request.query_parameters
-
     @pr = @product.all(params)
     # @prv = @product_variant.all(params)
     # @pr = Product.where("id = ?",1)

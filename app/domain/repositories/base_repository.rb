@@ -29,6 +29,7 @@ module Domain
       def build_query
         @request.each do |key,value|
           if BaseRepository.method_defined?(key)
+            get_table_columns()
             required_methods = method(key).parameters.find_all { |arg| arg[0] == :req}
             if required_methods.count == 1 then method(key).call(value) else method(key).call(key,value) end
           else
@@ -54,9 +55,57 @@ module Domain
         end
       end
 
-      def or_where(key, arg)
+      def contains(value)
+        args = value.split(',')
+        if args.count == 2 and @fields.include?(args[0])
+          @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}%"))
+        end
+        self
+      end
+
+      def or_contains(value)
+        args = value.split(',')
+        if args.count == 2 and @fields.include?(args[0])
+          @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("%#{args[1]}%")))
+        end
+        self
+      end
+
+      def start_with(value)
+        args = value.split(',')
+        if args.count == 2 and @fields.include?(args[0])
+            @model = @model.where(@arel_table_schema[args[0]].matches("#{args[1]}%"))
+        end
+        self
+      end
+
+      def or_start_with(value)
+        args = value.split(',')
+        if args.count == 2 and @fields.include?(args[0])
+          @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("#{args[1]}%")))
+        end
+        self
+      end
+
+      def end_with(value)
+        args = value.split(',')
+        if args.count == 2 and @fields.include?(args[0])
+          @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}"))
+        end
+        self
+      end
+
+      def or_end_with(value)
+        args = value.split(',')
+        if args.count == 2 and @fields.include?(args[0])
+          @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("%#{args[1]}")))
+        end
+        self
+      end
+
+      def or_where(key, value)
         # @model = @model.or(@model_schema.where("#{@model_table_name}.? = ?",key, arg))
-        @model = @model.or(@model_schema.where(@arel_table_schema[key].eq(arg)))
+        @model = @model.or(@model_schema.where(@arel_table_schema[key].eq(value)))
         self
       end
 
@@ -71,7 +120,7 @@ module Domain
       end
 
       def get
-        @model
+        @model.all
       end
 
     end
