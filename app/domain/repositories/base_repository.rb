@@ -16,6 +16,7 @@ module Domain
         @model = model
         @model_schema = model
         @model_table_name = @model_schema.to_s.underscore.pluralize
+        @arel_table_schema = @model_schema.arel_table
         self
       end
 
@@ -54,12 +55,14 @@ module Domain
       end
 
       def or_where(key, arg)
-        @model = @model.or(@model_schema.where("#{@model_table_name}.? = ?",key, arg))
+        # @model = @model.or(@model_schema.where("#{@model_table_name}.? = ?",key, arg))
+        @model = @model.or(@model_schema.where(@arel_table_schema[key].eq(arg)))
         self
       end
 
       def where(*args)
-        @model = @model.where("#{@model_table_name}.? = ?",args[0], args[1])
+        # @model = @model.where("#{@model_table_name}.? = ?",args[0], args[1])
+        @model = @model.where(@arel_table_schema[args[0]].eq(args[1]))
         self
       end
 

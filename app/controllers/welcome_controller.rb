@@ -21,10 +21,10 @@ class WelcomeController < ApplicationController
     # @pr = Product.where("count(product_id) > 1")
     # @pr = Product.joins(:product_variants).group("products.id").having("count(product_variants.product_id) > 1")
     # @pr = Product.includes(:product_variants).where(:product_variants => { :name => 's3'})
-    # product_variant =ProductVariant.arel_table
     # pro = Product.arel_table
     # products = Arel::Table.new(:products)
     # @pr = products.project(Arel.star)
+    # product_variant =ProductVariant.arel_table
     # @pr = Product.eager_load(:product_variants).where(product_variant[:name].matches('s3').or(product_variant[:product_id].eq(1)))
     @ps = Post.all
 
