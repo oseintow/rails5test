@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @label.name %>
+</p>
+
+<p>
+  <strong>Qty:</strong>
+  <%= @label.qty %>
+</p>
+
+<p>
+  <strong>Product variant:</strong>
+  <%= @label.product_variant %>
+</p>
+
+<%= link_to 'Edit', edit_label_path(@label) %> |
+<%= link_to 'Back', labels_path %>

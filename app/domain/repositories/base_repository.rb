@@ -55,6 +55,25 @@ module Domain
         end
       end
 
+      def page(value)
+        @page = value.to_i
+      end
+
+      def limit(value)
+        @limit = value.to_i
+      end
+
+      def per_page(value)
+        @limit = value.to_i
+      end
+
+      def with(value)
+        args = value.split(".")
+        arg = args.reverse.inject { |a, n| { n => a } }
+        @model = @model.includes(arg)
+        self
+      end
+
       def contains(value)
         args = value.split(',')
         if args.count == 2 and @fields.include?(args[0])
@@ -120,7 +139,11 @@ module Domain
       end
 
       def get
-        @model.all
+        if @page >= 1
+          @model.page(@page).per(@limit)
+        else
+          @model.all
+        end
       end
 
     end

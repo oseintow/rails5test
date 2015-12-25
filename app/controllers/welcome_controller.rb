@@ -12,6 +12,7 @@ class WelcomeController < ApplicationController
 
   def index
     @pr = @product.all(params)
+    # @pr = Product.page(2).per(1)
     # @prv = @product_variant.all(params)
     # @pr = Product.where("id = ?",1)
     # @pr = @pr.or(Product.where("title = 'dax'"))
@@ -29,7 +30,7 @@ class WelcomeController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @pr }
-      format.json { render :json => [@pr]}
+      format.json { render :json => @pr.to_json}
       # format.json { render :json => @pr.to_json(:include => :product_variants) }
     end
 

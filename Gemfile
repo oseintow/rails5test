@@ -35,6 +35,8 @@ gem 'responders'
 
 gem 'active_model_serializers'
 
+gem 'kaminari'
+
 # gem 'will_paginate'
 
 # gem 'rails-api'
