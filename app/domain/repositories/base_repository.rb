@@ -69,8 +69,8 @@ module Domain
 
       def with(value)
         args = value.split(".")
-        arg = args.reverse.inject { |a, n| { n => a } }
-        @model = @model.includes(arg)
+        associations = args.reverse.inject { |a, n| { n => a } }
+        @model = @model.includes(associations)
         self
       end
 
