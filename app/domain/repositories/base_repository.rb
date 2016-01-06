@@ -227,17 +227,6 @@ module Domain
           @model.page(@page).per(@limit)
         else
           @model.all
-          #
-          # @model = @model.each do |pro|
-          #
-          #   pro.attributes['product_variants'] = pro.product_variants
-          #   pro.product_variants.each do |v|
-          #     Rails.logger.info v.id
-          #     Rails.logger.info v.name
-          #   end
-          # end
-
-
         end
       end
 
