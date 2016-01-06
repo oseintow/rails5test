@@ -1,15 +1,31 @@
 class ProductsController < ApplicationController
+  respond_to :json
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
-  # GET /products
-  # GET /products.json
+
   def index
-    @products = Product.all
+    # @products = Product.all
+
+    @products = Product.includes(:product_variants => :labels)
+
+    # respond_with @products
+    render 'products/index', formats: :json
   end
 
   # GET /products/1
   # GET /products/1.json
   def show
+    product_variant = ProductVariant.arel_table
+    @product = Product.includes(:product_variants).where("products.id = 1")
+
+    render "products/show"
+
+    # respond_to do |format|
+    #   format.html # index.html.erb
+    #   format.json { render :json => @product }
+    #   # format.json { render :json => @pr.to_json(:include =>  {:product_variants  => { :include=> :labels}} ) }
+    #   # format.json { render :json => @pr.to_json(:include => :product_variants) }
+    # end
   end
 
   # GET /products/new

@@ -17,7 +17,7 @@ gem 'jquery-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.0'
+# gem 'jbuilder', '~> 2.0'
 # Use Puma as the app server
 gem 'puma'
 
@@ -33,19 +33,26 @@ gem 'arel-helpers'
 
 gem 'responders'
 
-gem 'active_model_serializers'
-
-gem 'kaminari'
+# gem 'active_model_serializers'
+#
+# gem 'kaminari'
 
 # gem 'will_paginate'
 
 # gem 'rails-api'
 
+gem 'rabl'
+
+# Also add either `oj` or `yajl-ruby` as the JSON parser
+gem 'oj'
+
+gem "binding_of_caller"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
-  gem 'better_errors'
+  # gem 'better_errors'
 end
 
 group :development do

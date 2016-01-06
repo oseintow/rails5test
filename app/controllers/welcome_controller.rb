@@ -11,28 +11,22 @@ class WelcomeController < ApplicationController
   end
 
   def index
+    # @pr = Product.all
     @pr = @product.all(params)
     # @pr = Product.page(2).per(1)
     # @prv = @product_variant.all(params)
-    # @pr = Product.where("id = ?",1)
-    # @pr = @pr.or(Product.where("title = 'dax'"))
-    # @pr = Product.where("count(product_id) > 1")
-    # @pr = Product.joins(:product_variants).group("products.id").having("count(product_variants.product_id) > 1")
-    # @pr = Product.includes(:product_variants).where(:product_variants => { :name => 's3'})
-    # pro = Product.arel_table
-    # products = Arel::Table.new(:products)
-    # @pr = products.project(Arel.star)
-    # product_variant = ProductVariant.arel_table
-    # @pr = Product.eager_load(:product_variants).where(product_variant[:name].matches('s3').or(product_variant[:product_id].eq(1)))
-    @ps = Post.all
 
-    # render json: @pr
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @pr }
-      format.json { render :json => @pr.to_json}
-      # format.json { render :json => @pr.to_json(:include => :product_variants) }
+    @pr.each do |p|
+      p.attributes[:product_variants] = p.product_variants
+      # logger.info p.class
     end
+
+    # render :json => @pr.to_json
+    render :json => @pr.to_json(:include => $associations)
+    #   format.html # index.html.erb
+    #   format.xml  { render :xml => @pr }
+    #   format.json { render :json =>@pr }
+    # end
 
     # respond_with @pr
   end

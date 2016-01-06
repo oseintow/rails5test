@@ -1,0 +1,18 @@
+<% [1,2,3,4,10].each do |e| %>
+    <%= e * 2 if e > 3 %>
+<% end %>
+
+<%= @mike %>
+<br/>
+<%= @prod %>
+<br/>
+<%= @phone %>
+
+<br/>
+
+<% @pr.each do |p| %>
+    <h2><%= p.title %></h2><br/>
+    <% p.product_variants.each do |pv| %>
+        <%= pv.name %><br/>
+    <% end %>
+<% end %>
