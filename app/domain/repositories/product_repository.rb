@@ -9,6 +9,7 @@ module Domain
       end
 
       def all(request)
+        @model = @model.includes(:product_image)
         request(request).get
       end
 

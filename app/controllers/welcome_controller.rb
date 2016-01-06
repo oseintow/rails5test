@@ -16,11 +16,6 @@ class WelcomeController < ApplicationController
     # @pr = Product.page(2).per(1)
     # @prv = @product_variant.all(params)
 
-    @pr.each do |p|
-      p.attributes[:product_variants] = p.product_variants
-      # logger.info p.class
-    end
-
     # render :json => @pr.to_json
     render :json => @pr.to_json(:include => $associations)
     #   format.html # index.html.erb

@@ -1,15 +1,17 @@
+require_dependency "product_repository"
+
 class ProductsController < ApplicationController
   respond_to :json
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
+  def initialize(product = Domain::Repositories::ProductRepository.new)
+    @product = product
+  end
+
 
   def index
-    # @products = Product.all
-
-    @products = Product.includes(:product_variants => :labels)
-
-    # respond_with @products
-    render 'products/index', formats: :json
+    products = @product.all(params)
+    render :json => products.to_json(:include => $associations.merge(:product_image => {}))
   end
 
   # GET /products/1
