@@ -10,17 +10,28 @@ class ProductsController < ApplicationController
 
 
   def index
-    products = @product.all(params)
-    render :json => products.to_json(:include => $associations.merge(:product_image => {}))
+    products = @product.all(params).to_json(:include => $associations.merge(:product_image => {}))
+    render :json => products
   end
 
-  # GET /products/1
-  # GET /products/1.json
-  def show
-    product_variant = ProductVariant.arel_table
-    @product = Product.includes(:product_variants).where("products.id = 1")
 
-    render "products/show"
+  def show
+    begin
+      # raise  :forbidden, "page not foun yej"
+    # product_variant = ProductVariant.arel_table
+    #   product = Product.includes(:product_variants).where("products.id = 1")
+    #
+    # render :json => product.to_json(:include => $associations.merge(:product_image => {}))
+
+      e = 2 / 0
+
+      product = Product.includes(:product_variants).where("products.id = 1")
+      render :json => product.to_json(:include => $associations.merge(:product_image => {}))
+    rescue Exception => e
+        puts "==========="
+        puts e
+    end
+    # render "products/show"
 
     # respond_to do |format|
     #   format.html # index.html.erb

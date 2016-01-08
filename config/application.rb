@@ -12,7 +12,12 @@ module Rails5test
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
 
+    # config.middleware.insert_before ActionDispatch::ParamsParser, "CatchJsonParseErrors"
+
     config.autoload_paths += %W(#{config.root}/app/domain/repositories)
     config.autoload_paths += %W(#{config.root}/app/domain/services)
+
+    config.exceptions_app = self.routes
   end
 end
+

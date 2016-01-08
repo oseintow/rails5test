@@ -29,7 +29,6 @@ module Domain
       end
 
       def build_query
-        $associations = {}
         @request.each do |key,value|
           if BaseRepository.method_defined?(key)
             get_table_columns()
@@ -47,7 +46,7 @@ module Domain
       end
 
       def get_table_columns
-        if @fields.empty? and @model_schema
+        if @fields.empty? && @model_schema
           @fields = @model_schema.column_names
         end
       end
@@ -149,7 +148,7 @@ module Domain
 
       def contains(value)
         args = value.split(',')
-        if args.count == 2 and @fields.include?(args[0])
+        if args.count == 2 && @fields.include?(args[0])
           @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}%"))
         end
         self
@@ -157,7 +156,7 @@ module Domain
 
       def or_contains(value)
         args = value.split(',')
-        if args.count == 2 and @fields.include?(args[0])
+        if args.count == 2 && @fields.include?(args[0])
           @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("%#{args[1]}%")))
         end
         self
@@ -165,7 +164,7 @@ module Domain
 
       def start_with(value)
         args = value.split(',')
-        if args.count == 2 and @fields.include?(args[0])
+        if args.count == 2 && @fields.include?(args[0])
             @model = @model.where(@arel_table_schema[args[0]].matches("#{args[1]}%"))
         end
         self
@@ -173,7 +172,7 @@ module Domain
 
       def or_start_with(value)
         args = value.split(',')
-        if args.count == 2 and @fields.include?(args[0])
+        if args.count == 2 && @fields.include?(args[0])
           @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("#{args[1]}%")))
         end
         self
@@ -181,7 +180,7 @@ module Domain
 
       def end_with(value)
         args = value.split(',')
-        if args.count == 2 and @fields.include?(args[0])
+        if args.count == 2 && @fields.include?(args[0])
           @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}"))
         end
         self

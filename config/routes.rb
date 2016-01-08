@@ -16,4 +16,8 @@ Rails.application.routes.draw do
 
   # Serve websocket cable requests in-process
   # mount ActionCable.server => '/cable'
+
+  # get "*path", to: redirect('/')
+  get '*unmatched_route', to: 'application#raise_not_found'
+  # match ':status', to: "errors#show", constraints: {status: /\d{3}/}, via: :all
 end
