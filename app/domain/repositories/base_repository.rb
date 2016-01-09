@@ -2,7 +2,7 @@ module Domain
   module Repositories
     class BaseRepository
       attr_accessor :model, :request, :fields, :model_schema
-      attr_accessor :limit, :page, :exclude_from_query
+      attr_accessor :limit, :page, :exclude_from_query, :query_value_seperator
 
       def initialize(model)
         $associations = {}
@@ -10,6 +10,7 @@ module Domain
         @page   = 0
         @fields = []
         @exclude_from_query = []
+        @query_value_seperator = "|"
         model(model)
       end
 
@@ -77,10 +78,13 @@ module Domain
       end
 
       def with(value)
-        args = value.split(".")
-        associations = args.reverse.inject { |a, n| { n => a } }
-        build_includes(value)
-        @model = @model.includes(associations)
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(".")
+          associations = args.reverse.inject { |a, n| { n => a } }
+          build_includes(val)
+          @model = @model.includes(associations)
+        end
         self
       end
 

@@ -4,6 +4,9 @@
     <%= e * 2 if e > 3 %>
 <% end %>
 
+  <div ng-include="'/assets/components/welcome.html'"></div>
+  <div ng-include="'/assets/components/mon.html.erb'"></div>
+
 <p>{{firstname}} {{lastname}}</p>
 <input type="text" ng-model="mon"/>
 {{mon}}

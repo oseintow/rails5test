@@ -10,6 +10,7 @@ class ProductsController < ApplicationController
 
 
   def index
+    # products = Product.includes(:product_variants).includes(:product_image).to_json(:include => [:product_variants, :product_image])
     products = @product.all(params).to_json(:include => $associations.merge(:product_image => {}))
     render :json => products
   end
