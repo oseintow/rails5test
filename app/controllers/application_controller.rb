@@ -35,9 +35,13 @@ class ApplicationController < ActionController::Base
   end
 
   def record_invalid(error)
-    errors = error.record.errors.messages
     validation_errors = {}
-    errors.each{|k,v| validation_errors[k] = ["#{k} #{v[0]}"] }
+    error.record.errors.messages.each do |key,value|
+      value_array = []
+      value.each {|val| value_array << "#{key} #{val}"}
+      validation_errors[key] = value_array
+    end
+    puts validation_errors.inspect
 
     respond_to do |format|
       format.json { render :json => { errors: validation_errors }, :status => :unprocessable_entity }
