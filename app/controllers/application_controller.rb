@@ -41,7 +41,6 @@ class ApplicationController < ActionController::Base
       value.each {|val| value_array << "#{key} #{val}"}
       validation_errors[key] = value_array
     end
-    puts validation_errors.inspect
 
     respond_to do |format|
       format.json { render :json => { errors: validation_errors }, :status => :unprocessable_entity }
