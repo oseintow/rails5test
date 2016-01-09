@@ -6,8 +6,8 @@ module Domain
 
       def initialize(model)
         $associations = {}
-        @limit  = 0
-        @page   = 0
+        @limit = 0
+        @page = 0
         @fields = []
         @exclude_from_query = []
         @query_value_seperator = "|"
@@ -18,7 +18,7 @@ module Domain
         @model = model
         @model_schema = model
         # @model_table_name = @model_schema.to_s.underscore.pluralize
-        @model_table_name  = @model_schema.table_name
+        @model_table_name = @model_schema.table_name
         @arel_table_schema = @model_schema.arel_table
         self
       end
@@ -30,15 +30,23 @@ module Domain
       end
 
       def build_query
-        @request.each do |key,value|
+        @request.each do |key, value|
           if BaseRepository.method_defined?(key)
             get_table_columns()
-            required_methods = method(key).parameters.find_all { |arg| arg[0] == :req}
-            if required_methods.count == 1 then method(key).call(value) else method(key).call(key,value) end
+            required_methods = method(key).parameters.find_all { |arg| arg[0] == :req }
+            if required_methods.count == 1 then
+              method(key).call(value)
+            else
+              method(key).call(key, value)
+            end
           else
             unless @exclude_from_query.include?(key)
               get_table_columns()
-              if @fields.include? key then where(key,value) else method_missing(key,value) end
+              if @fields.include? key then
+                where(key, value)
+              else
+                method_missing(key, value)
+              end
             end
           end
         end
@@ -71,17 +79,21 @@ module Domain
       end
 
       def build_includes(value)
-        value.gsub! ".",".include."
+        value.gsub! ".", ".include."
         value = value.split(".")
-        association = value.reverse.inject { |a, n| { n.to_sym => a} }
-        if association.is_a?(String) then $associations.merge!(association.to_sym => {}) else $associations.merge!(association) end
+        association = value.reverse.inject { |a, n| {n.to_sym => a} }
+        if association.is_a?(String) then
+          $associations.merge!(association.to_sym => {})
+        else
+          $associations.merge!(association)
+        end
       end
 
       def with(value)
         value = value.split(@query_value_seperator)
         value.each do |val|
           args = val.split(".")
-          associations = args.reverse.inject { |a, n| { n => a } }
+          associations = args.reverse.inject { |a, n| {n => a} }
           build_includes(val)
           @model = @model.includes(associations)
         end
@@ -89,111 +101,141 @@ module Domain
       end
 
       def with_is(value)
-        args = value.split(",")
-        if args.count == 3
-          assc = args[0].split(".")
-          associations = assc.reverse.inject { |a, n| { n => a } }
-          build_includes(args[0])
-          table_name = assc[-1].classify.singularize
-          if Object.const_defined?(table_name) then
-            table_name = table_name.constantize.arel_table
-            @model = @model.eager_load(associations).where(table_name[args[1]].eq(args[2]))
-          else
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 3
+            assc = args[0].split(".")
+            associations = assc.reverse.inject { |a, n| {n => a} }
+            build_includes(args[0])
+            table_name = assc[-1].classify.singularize
+            if Object.const_defined?(table_name) then
+              table_name = table_name.constantize.arel_table
+              @model = @model.eager_load(associations).where(table_name[args[1]].eq(args[2]))
+            else
 
+            end
           end
         end
         self
       end
 
       def with_contains(value)
-        args = value.split(",")
-        if args.count == 3
-          assc = args[0].split(".")
-          associations = assc.reverse.inject { |a, n| { n => a } }
-          build_includes(args[0])
-          table_name = assc[-1].classify.singularize
-          if Object.const_defined?(table_name) then
-            table_name = table_name.constantize.arel_table
-            @model = @model.eager_load(associations).where(table_name[args[1]].matches("%#{args[2]}%"))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 3
+            assc = args[0].split(".")
+            associations = assc.reverse.inject { |a, n| {n => a} }
+            build_includes(args[0])
+            table_name = assc[-1].classify.singularize
+            if Object.const_defined?(table_name) then
+              table_name = table_name.constantize.arel_table
+              @model = @model.eager_load(associations).where(table_name[args[1]].matches("%#{args[2]}%"))
+            end
           end
         end
         self
       end
 
       def with_start_with(value)
-        args = value.split(",")
-        if args.count == 3
-          assc = args[0].split(".")
-          associations = assc.reverse.inject { |a, n| { n => a } }
-          build_includes(args[0])
-          table_name = assc[-1].classify.singularize
-          if Object.const_defined?(table_name) then
-            table_name = table_name.constantize.arel_table
-            @model = @model.eager_load(associations).where(table_name[args[1]].matches("#{args[2]}%"))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 3
+            assc = args[0].split(".")
+            associations = assc.reverse.inject { |a, n| {n => a} }
+            build_includes(args[0])
+            table_name = assc[-1].classify.singularize
+            if Object.const_defined?(table_name) then
+              table_name = table_name.constantize.arel_table
+              @model = @model.eager_load(associations).where(table_name[args[1]].matches("#{args[2]}%"))
+            end
           end
         end
         self
       end
 
       def with_end_with(value)
-        args = value.split(",")
-        if args.count == 3
-          assc = args[0].split(".")
-          associations = assc.reverse.inject { |a, n| { n => a } }
-          build_includes(args[0])
-          table_name = assc[-1].classify.singularize
-          if Object.const_defined?(table_name) then
-            table_name = table_name.constantize.arel_table
-            @model = @model.eager_load(associations).where(table_name[args[1]].matches("%#{args[2]}"))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 3
+            assc = args[0].split(".")
+            associations = assc.reverse.inject { |a, n| {n => a} }
+            build_includes(args[0])
+            table_name = assc[-1].classify.singularize
+            if Object.const_defined?(table_name) then
+              table_name = table_name.constantize.arel_table
+              @model = @model.eager_load(associations).where(table_name[args[1]].matches("%#{args[2]}"))
+            end
           end
         end
         self
       end
 
       def contains(value)
-        args = value.split(',')
-        if args.count == 2 && @fields.include?(args[0])
-          @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}%"))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 2 && @fields.include?(args[0])
+            @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}%"))
+          end
         end
         self
       end
 
       def or_contains(value)
-        args = value.split(',')
-        if args.count == 2 && @fields.include?(args[0])
-          @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("%#{args[1]}%")))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 2 && @fields.include?(args[0])
+            @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("%#{args[1]}%")))
+          end
         end
         self
       end
 
       def start_with(value)
-        args = value.split(',')
-        if args.count == 2 && @fields.include?(args[0])
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 2 && @fields.include?(args[0])
             @model = @model.where(@arel_table_schema[args[0]].matches("#{args[1]}%"))
+          end
         end
         self
       end
 
       def or_start_with(value)
-        args = value.split(',')
-        if args.count == 2 && @fields.include?(args[0])
-          @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("#{args[1]}%")))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 2 && @fields.include?(args[0])
+            @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("#{args[1]}%")))
+          end
         end
         self
       end
 
       def end_with(value)
-        args = value.split(',')
-        if args.count == 2 && @fields.include?(args[0])
-          @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}"))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 2 && @fields.include?(args[0])
+            @model = @model.where(@arel_table_schema[args[0]].matches("%#{args[1]}"))
+          end
         end
         self
       end
 
       def or_end_with(value)
-        args = value.split(',')
-        if args.count == 2 && @fields.include?(args[0])
-          @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("%#{args[1]}")))
+        value = value.split(@query_value_seperator)
+        value.each do |val|
+          args = val.split(",")
+          if args.count == 2 && @fields.include?(args[0])
+            @model = @model.or(@model_schema.where(@arel_table_schema[args[0]].matches("%#{args[1]}")))
+          end
         end
         self
       end
