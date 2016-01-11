@@ -299,6 +299,8 @@ module Domain
               :per_page => @collection.limit_value,
               :current_page => @collection.current_page,
               :num_pages => @collection.num_pages,
+              :from => (@collection.current_page - 1) * @collection.limit_value + 1,
+              :to => ((@collection.current_page - 1) * @collection.limit_value + 1) + @collection.count - 1,
               :data => @collection.to_a.as_json(opts)
           }
         else
