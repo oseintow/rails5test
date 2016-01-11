@@ -270,15 +270,10 @@ module Domain
       def get
         if @page >= 1
           @collection = @model.page(@page).per(@limit) # kaminari
-          self
           # @model.paginate(:page => @page, :per_page => @limit) # will_paginate
         else
-          @model.all
+          @collection = @model.all
         end
-      end
-
-      def pageable(collection)
-        @collection = collection
         self
       end
 
@@ -287,7 +282,6 @@ module Domain
       end
 
       def to_json(opts = {})
-        Rails.logger.info "mon"
         make_json(opts)
       end
 
@@ -297,13 +291,18 @@ module Domain
         else
           opts = {:include => @associations.merge(opts[:include] => {})}
         end
-        {
-            :total => @collection.total_count,
-            :per_page => @collection.limit_value,
-            :current_page => @collection.current_page,
-            :num_pages => @collection.num_pages,
-            :data => @collection.to_a.as_json(opts)
-        }
+
+        if @page > 0
+          {
+              :total => @collection.total_count,
+              :per_page => @collection.limit_value,
+              :current_page => @collection.current_page,
+              :num_pages => @collection.num_pages,
+              :data => @collection.to_a.as_json(opts)
+          }
+        else
+          @collection.to_a.as_json(opts)
+        end
       end
 
     end
