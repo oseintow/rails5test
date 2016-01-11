@@ -289,7 +289,8 @@ module Domain
         if opts.empty? then
           opts = {:include => @associations}
         else
-          opts = {:include => @associations.merge(opts[:include] => {})}
+          options = opts[:include].is_a?(Symbol) ? {opts[:include] => {}} : opts[:include]
+          opts = {:include => @associations.merge(options)}
         end
 
         if @page > 0
