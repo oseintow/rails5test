@@ -7,7 +7,8 @@ class Product < ActiveRecord::Base
 
   accepts_nested_attributes_for :product_variants, :product_image
 
-  validates_numericality_of :title
+  validates_uniqueness_of :title
+  # validates_numericality_of :title
   validates_length_of :title, :minimum => 2
   validates_length_of :description, :minimum => 2
 

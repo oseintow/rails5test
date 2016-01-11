@@ -5,7 +5,7 @@ module Domain
       attr_accessor :limit, :page, :exclude_from_query, :query_value_seperator
 
       def initialize(model)
-        $associations = {}
+        @associations = {}
         @limit = 0
         @page = 0
         @fields = []
@@ -83,9 +83,9 @@ module Domain
         value = value.split(".")
         association = value.reverse.inject { |a, n| {n.to_sym => a} }
         if association.is_a?(String) then
-          $associations.merge!(association.to_sym => {})
+          @associations.merge!(association.to_sym => {})
         else
-          $associations.merge!(association)
+          @associations.merge!(association)
         end
       end
 
@@ -269,10 +269,41 @@ module Domain
 
       def get
         if @page >= 1
-          @model.page(@page).per(@limit)
+          @collection = @model.page(@page).per(@limit) # kaminari
+          self
+          # @model.paginate(:page => @page, :per_page => @limit) # will_paginate
         else
           @model.all
         end
+      end
+
+      def pageable(collection)
+        @collection = collection
+        self
+      end
+
+      def as_json(opts = {})
+        make_json(opts)
+      end
+
+      def to_json(opts = {})
+        Rails.logger.info "mon"
+        make_json(opts)
+      end
+
+      def make_json(opts = {})
+        if opts.empty? then
+          opts = {:include => @associations}
+        else
+          opts = {:include => @associations.merge(opts[:include] => {})}
+        end
+        {
+            :total => @collection.total_count,
+            :per_page => @collection.limit_value,
+            :current_page => @collection.current_page,
+            :num_pages => @collection.num_pages,
+            :data => @collection.to_a.as_json(opts)
+        }
       end
 
     end

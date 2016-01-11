@@ -1,14 +1,28 @@
 class ApplicationController < ActionController::Base
+  class UnprocessEntity < StandardError; end
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   # protect_from_forgery with: :exception
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
-  rescue_from Exception, with: :not_found
-  # rescue_from ActiveRecord::Unprocessable_entity, with: :unprocessable_entity
+  rescue_from Exception, with: :error
   rescue_from ActionController::RoutingError, with: :not_found
-  # rescue_from ActiveRecord::RecordNotUnique, :with => :my_rescue_method
   rescue_from ActiveRecord::RecordInvalid, :with => :record_invalid
+  rescue_from UnprocessEntity, with: :unprocessable_entity
+
+  def pageable(collection)
+    @collection = collection
+  end
+
+  def as_json(opts = {})
+      {
+          :num_pages => @collection.num_pages,
+          :limit_value => @collection.limit_value,
+          :current_page => @collection.current_page,
+          :total_count => @collection.total_count,
+          :records => @collection.to_a.as_json(opts)
+      }
+  end
 
   def raise_not_found
     raise ActionController::RoutingError.new("No route matches #{params[:unmatched_route]}")
@@ -27,9 +41,9 @@ class ApplicationController < ActionController::Base
 
   def unprocessable_entity(error)
     respond_to do |format|
-      format.json { render :json => {:error => error.record.errors}, :status => :unprocessable_entity }
-      format.xml { head :not_found }
-      format.any { head :not_found }
+      format.json { render :json => {:error => error.message}, :status => :unprocessable_entity }
+      format.xml { head :unprocessable_entity }
+      format.any { head :unprocessable_entity }
     end
 
   end
@@ -42,10 +56,15 @@ class ApplicationController < ActionController::Base
       validation_errors[key] = value_array
     end
 
+    @errors = error
+
     respond_to do |format|
+      # format.html { render :new }
+      format.html { redirect_to :back, flash: {:errors => error} }
+      # format.html { redirect_back(fallback_location: fallback_location) }
       format.json { render :json => { errors: validation_errors }, :status => :unprocessable_entity }
-      format.xml { head :not_found }
-      format.any { head :not_found }
+      format.xml { head :unprocessable_entity }
+      format.any { head :unprocessable_entity }
     end
 
   end
@@ -54,9 +73,9 @@ class ApplicationController < ActionController::Base
 
     respond_to do |format|
       format.html { render :file => "#{Rails.root}/public/500", :layout => false, :status => :error }
-      format.json { render :json => {:errors => error.message || "something unusual happened"}, :status => :not_found }
-      format.xml { head :not_found }
-      format.any { head :not_found }
+      format.json { render :json => {:errors => error.message || "something unusual happened"}, :status => :error }
+      format.xml { head :error }
+      format.any { head :error }
     end
   end
 end

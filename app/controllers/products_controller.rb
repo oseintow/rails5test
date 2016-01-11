@@ -11,8 +11,10 @@ class ProductsController < ApplicationController
 
   def index
     # products = Product.includes(:product_variants).includes(:product_image).to_json(:include => [:product_variants, :product_image])
-    products = @product.all(params).to_json(:include => $associations.merge(:product_image => {}))
+    products = @product.all(params).to_json(:include => :product_image)
     render :json => products
+    # render :json => @product.pageable(products)
+    # render :json => PageableController.new(products).to_json(:include => $associations.merge(:product_image => {}))
   end
 
 
@@ -24,7 +26,7 @@ class ProductsController < ApplicationController
     #
     # render :json => product.to_json(:include => $associations.merge(:product_image => {}))
 
-      e = 2 / 0
+      # e = 2 / 0
 
       product = Product.includes(:product_variants).where("products.id = 1")
       render :json => product.to_json(:include => $associations.merge(:product_image => {}))
@@ -54,12 +56,14 @@ class ProductsController < ApplicationController
   # POST /products
   # POST /products.json
   def create
+    # raise UnprocessEntity, "Awesome error"
     @product = Product.new(product_params)
 
     respond_to do |format|
-      if @product.save!
+      if @product.save
         format.html { redirect_to @product, notice: 'Product was successfully created.' }
-        format.json { render :show, status: :created, location: @product }
+        # format.json { render :show, status: :created, location: @product }
+        format.json { render json: "record saved successfully".to_json}
       else
         format.html { render :new }
         format.json { render json: @product.errors, status: :unprocessable_entity }
@@ -73,7 +77,8 @@ class ProductsController < ApplicationController
     respond_to do |format|
       if @product.update!(product_params)
         format.html { redirect_to @product, notice: 'Product was successfully updated.' }
-        format.json { render :show, status: :ok, location: @product }
+        # format.json { render :show, status: :ok, location: @product }
+        format.json { render json: "record updated successfully"}
       else
         format.html { render :edit }
         format.json { render json: @product.errors, status: :unprocessable_entity }
