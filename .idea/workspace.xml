@@ -51,8 +51,8 @@
       <file leaf-file-name="base_repository.rb" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/domain/repositories/base_repository.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.72478634">
-              <caret line="305" column="12" selection-start-line="305" selection-start-column="12" selection-end-line="305" selection-end-column="12" />
+            <state vertical-scroll-proportion="0.4888889">
+              <caret line="299" column="56" selection-start-line="299" selection-start-column="56" selection-end-line="299" selection-end-column="56" />
               <folding />
             </state>
           </provider>
@@ -1190,8 +1190,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/domain/repositories/base_repository.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.72478634">
-          <caret line="305" column="12" selection-start-line="305" selection-start-column="12" selection-end-line="305" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.4888889">
+          <caret line="299" column="56" selection-start-line="299" selection-start-column="56" selection-end-line="299" selection-end-column="56" />
           <folding />
         </state>
       </provider>
