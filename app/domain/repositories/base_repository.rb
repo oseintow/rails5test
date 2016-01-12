@@ -299,19 +299,24 @@ module Domain
           opts = {:include => @associations.merge(options)}
         end
 
+        build_data(opts)
+
+      end
+
+      def build_data(opts = {})
         if @page >= 1
           {
-              :total => @collection.total_count,
-              :per_page => @collection.limit_value,
-              :current_page => @collection.current_page,
-              :last_page => @collection.num_pages,
-              :next_page_url => (@collection.current_page.to_i < @collection.num_pages) ? @request.base_url + @request.path + "?page=" +
-                  (@collection.current_page.to_i + 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
-              :prev_page_url => (@collection.current_page.to_i - 1 > 0 && !@collection.empty?) ? @request.base_url + @request.path + "?page=" +
-                   (@collection.current_page.to_i - 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
-              :from => !@collection.empty? ? (@collection.current_page - 1) * @collection.limit_value + 1 : 1,
-              :to => !@collection.empty? ? ((@collection.current_page - 1) * @collection.limit_value + 1) + @collection.count - 1 : 0,
-              :data => @collection.to_a.as_json(opts)
+            :total => @collection.total_count,
+            :per_page => @collection.limit_value,
+            :current_page => @collection.current_page,
+            :last_page => @collection.num_pages,
+            :next_page_url => (@collection.current_page.to_i < @collection.num_pages) ? @request.base_url + @request.path + "?page=" +
+                (@collection.current_page.to_i + 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
+            :prev_page_url => (@collection.current_page.to_i - 1 > 0 && !@collection.empty?) ? @request.base_url + @request.path + "?page=" +
+                (@collection.current_page.to_i - 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
+            :from => !@collection.empty? ? (@collection.current_page - 1) * @collection.limit_value + 1 : 1,
+            :to => !@collection.empty? ? ((@collection.current_page - 1) * @collection.limit_value + 1) + @collection.count - 1 : 0,
+            :data => @collection.to_a.as_json(opts)
           }
         else
           @collection.to_a.as_json(opts)

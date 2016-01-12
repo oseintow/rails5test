@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="655c5346-7c4f-43bf-9afb-380e1a07ab5b" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/domain/repositories/base_repository.rb" afterPath="$PROJECT_DIR$/app/domain/repositories/base_repository.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="rails5test.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,8 +51,8 @@
       <file leaf-file-name="base_repository.rb" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/domain/repositories/base_repository.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.38768718">
-              <caret line="301" column="21" selection-start-line="301" selection-start-column="21" selection-end-line="301" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.19633943">
+              <caret line="306" column="20" selection-start-line="306" selection-start-column="20" selection-end-line="306" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -1143,8 +1144,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/domain/repositories/base_repository.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38768718">
-          <caret line="301" column="21" selection-start-line="301" selection-start-column="21" selection-end-line="301" selection-end-column="21" />
+        <state vertical-scroll-proportion="0.19633943">
+          <caret line="306" column="20" selection-start-line="306" selection-start-column="20" selection-end-line="306" selection-end-column="20" />
           <folding />
         </state>
       </provider>
