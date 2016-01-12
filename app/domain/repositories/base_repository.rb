@@ -257,13 +257,12 @@ module Domain
       end
 
       def fields(value)
-        if value.split(",").include?(@model_schema.primary_key)
-          value = "#{@model_table_name}." + value
-        elsif !value.split(",").include?("#{@model_table_name}.#{@model_schema.primary_key}")
-          value = "#{@model_table_name}.#{@model_schema.primary_key}," + value
-        end
-
         value = value.split(",").each{|val| "#{@model_table_name}.#{val}" unless val.include?(".") }
+        pri_key = "#{@model_table_name}.#{@model_schema.primary_key}"
+
+        unless value.include?(pri_key)
+          value << pri_key
+        end
         value.join(",")
         @model = @model.select(value)
         self
