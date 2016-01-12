@@ -19,16 +19,15 @@ module Domain
       def model(model)
         @model = model
         @model_schema = model
-        # @model_table_name = @model_schema.to_s.underscore.pluralize
         @model_table_name = @model_schema.table_name
         @arel_table_schema = @model_schema.arel_table
         self
       end
 
       def request(request)
+        @request = request
         @request_format = request.headers["Content-Type"] || request.params[:format]
         @request_format = (@request_format == "application/json" || @request_format =="json") ? "json" : request.headers["Content-Type"]
-        @request = request
         @exclude_params = request.params.except(:action, :controller, :format)
         build_query()
         self
@@ -260,10 +259,12 @@ module Domain
       def fields(value)
         if value.split(",").include?(@model_schema.primary_key)
           value = "#{@model_table_name}." + value
-        else
+        elsif !value.split(",").include?("#{@model_table_name}.#{@model_schema.primary_key}")
           value = "#{@model_table_name}.#{@model_schema.primary_key}," + value
         end
-        value.gsub! ",", ",#{@model_table_name}."
+
+        value = value.split(",").each{|val| "#{@model_table_name}.#{val}" unless val.include?(".") }
+        value.join(",")
         @model = @model.select(value)
         self
       end
