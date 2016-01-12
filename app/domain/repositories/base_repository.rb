@@ -245,13 +245,11 @@ module Domain
       end
 
       def or_where(key, value)
-        # @model = @model.or(@model_schema.where("#{@model_table_name}.? = ?",key, arg))
         @model = @model.or(@model_schema.where(@arel_table_schema[key].eq(value)))
         self
       end
 
       def where(*args)
-        # @model = @model.where("#{@model_table_name}.? = ?",args[0], args[1])
         @model = @model.where(@arel_table_schema[args[0]].eq(args[1]))
         self
       end
@@ -275,7 +273,6 @@ module Domain
       def get
         if @page >= 1
           @collection = @model.page(@page).per(@limit) # kaminari
-          # @model.paginate(:page => @page, :per_page => @limit) # will_paginate
         else
           @collection = @model.all
         end
@@ -316,10 +313,10 @@ module Domain
                 (@collection.current_page.to_i - 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
             :from => !@collection.empty? ? (@collection.current_page - 1) * @collection.limit_value + 1 : 1,
             :to => !@collection.empty? ? ((@collection.current_page - 1) * @collection.limit_value + 1) + @collection.count - 1 : 0,
-            :data => @collection.to_a.as_json(opts)
+            :data => @collection.references(:product_variants).to_a.as_json(opts)
           }
         else
-          @collection.to_a.as_json(opts)
+          @collection.references(:product_variants).to_a.as_json(opts)
         end
       end
 
