@@ -24,7 +24,9 @@ module Domain
       end
 
       def request(request)
-        @request = request.except(:action, :controller, :format)
+        @request_format = request.headers["Content-Type"] || request.params[:format]
+        @request_format = (@request_format == "application/json" || @request_format =="json") ? "json" : request.headers["Content-Type"]
+        @request = request.params.except(:action, :controller, :format)
         build_query()
         self
       end
@@ -274,7 +276,8 @@ module Domain
         else
           @collection = @model.all
         end
-        self
+
+        if @request_format == "json" then self else @collection end
       end
 
       def as_json(opts = {})
@@ -293,7 +296,7 @@ module Domain
           opts = {:include => @associations.merge(options)}
         end
 
-        if @page > 0
+        if @page >= 1
           {
               :total => @collection.total_count,
               :per_page => @collection.limit_value,

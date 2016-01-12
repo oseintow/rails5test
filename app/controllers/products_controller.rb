@@ -10,11 +10,12 @@ class ProductsController < ApplicationController
 
 
   def index
-    # products = Product.includes(:product_variants).includes(:product_image).to_json(:include => [:product_variants, :product_image])
-    products = @product.all(params).to_json(:include => {:product_image => {:only=>[:id,:url]}})
-    render :json => products
-    # render :json => @product.pageable(products)
-    # render :json => PageableController.new(products).to_json(:include => $associations.merge(:product_image => {}))
+    @products = @product.all(request)
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render :json => {:products => @products.to_json(:include =>{:product_image => {}}) }}
+    end
   end
 
 
@@ -60,7 +61,7 @@ class ProductsController < ApplicationController
     @product = Product.new(product_params)
 
     respond_to do |format|
-      if @product.save
+      if @product.save!
         format.html { redirect_to @product, notice: 'Product was successfully created.' }
         # format.json { render :show, status: :created, location: @product }
         format.json { render json: "record saved successfully".to_json}
@@ -89,6 +90,7 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.json
   def destroy
+    @product = Product.find(params[:id])
     @product.destroy
     respond_to do |format|
       format.html { redirect_to products_url, notice: 'Product was successfully destroyed.' }
