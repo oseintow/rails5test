@@ -1,3 +1,5 @@
+require 'uri'
+
 module Domain
   module Repositories
     class BaseRepository
@@ -26,13 +28,14 @@ module Domain
       def request(request)
         @request_format = request.headers["Content-Type"] || request.params[:format]
         @request_format = (@request_format == "application/json" || @request_format =="json") ? "json" : request.headers["Content-Type"]
-        @request = request.params.except(:action, :controller, :format)
+        @request = request
+        @exclude_params = request.params.except(:action, :controller, :format)
         build_query()
         self
       end
 
       def build_query
-        @request.each do |key, value|
+        @exclude_params.each do |key, value|
           if BaseRepository.method_defined?(key)
             get_table_columns()
             required_methods = method(key).parameters.find_all { |arg| arg[0] == :req }
@@ -296,12 +299,18 @@ module Domain
           opts = {:include => @associations.merge(options)}
         end
 
+        Rails.logger.info @request.path.inspect
+
         if @page >= 1
           {
               :total => @collection.total_count,
               :per_page => @collection.limit_value,
               :current_page => @collection.current_page,
-              :num_pages => @collection.num_pages,
+              :last_page => @collection.num_pages,
+              :next_page_url => (@collection.current_page.to_i + 1 < @collection.num_pages) ? @request.base_url + @request.path + "?page=" +
+                  (@collection.current_page.to_i + 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
+              :prev_page_url => (@collection.current_page.to_i - 1 > 0 && @collection.num_pages > 1) ? @request.base_url + @request.path + "?page=" +
+                   (@collection.current_page.to_i - 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
               :from => !@collection.empty? ? (@collection.current_page - 1) * @collection.limit_value + 1 : 1,
               :to => !@collection.empty? ? ((@collection.current_page - 1) * @collection.limit_value + 1) + @collection.count - 1 : 0,
               :data => @collection.to_a.as_json(opts)
