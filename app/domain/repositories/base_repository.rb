@@ -261,6 +261,7 @@ module Domain
         unless value.include?(pri_key)
           value << pri_key
         end
+
         value.join(",")
         @model = @model.select(value)
         self
@@ -313,10 +314,10 @@ module Domain
                 (@collection.current_page.to_i - 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
             :from => !@collection.empty? ? (@collection.current_page - 1) * @collection.limit_value + 1 : 1,
             :to => !@collection.empty? ? ((@collection.current_page - 1) * @collection.limit_value + 1) + @collection.count - 1 : 0,
-            :data => @collection.references(:product_variants).to_a.as_json(opts)
+            :data => @collection.to_a.as_json(opts)
           }
         else
-          @collection.references(:product_variants).to_a.as_json(opts)
+          @collection.to_a.as_json(opts)
         end
       end
 
