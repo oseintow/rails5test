@@ -307,9 +307,9 @@ module Domain
               :per_page => @collection.limit_value,
               :current_page => @collection.current_page,
               :last_page => @collection.num_pages,
-              :next_page_url => (@collection.current_page.to_i + 1 < @collection.num_pages) ? @request.base_url + @request.path + "?page=" +
+              :next_page_url => (@collection.current_page.to_i < @collection.num_pages) ? @request.base_url + @request.path + "?page=" +
                   (@collection.current_page.to_i + 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
-              :prev_page_url => (@collection.current_page.to_i - 1 > 0 && @collection.num_pages > 1) ? @request.base_url + @request.path + "?page=" +
+              :prev_page_url => (@collection.current_page.to_i - 1 > 0 && !@collection.empty?) ? @request.base_url + @request.path + "?page=" +
                    (@collection.current_page.to_i - 1).to_s + "&" + URI.decode(@exclude_params.except(:page).to_query) : nil,
               :from => !@collection.empty? ? (@collection.current_page - 1) * @collection.limit_value + 1 : 1,
               :to => !@collection.empty? ? ((@collection.current_page - 1) * @collection.limit_value + 1) + @collection.count - 1 : 0,
