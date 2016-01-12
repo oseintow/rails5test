@@ -299,8 +299,6 @@ module Domain
           opts = {:include => @associations.merge(options)}
         end
 
-        Rails.logger.info @request.path.inspect
-
         if @page >= 1
           {
               :total => @collection.total_count,
