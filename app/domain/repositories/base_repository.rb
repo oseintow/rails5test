@@ -259,11 +259,21 @@ module Domain
         associations = value[0].split(".")
         build_has_query = ""
         prev_table = ""
+        build_count_condition = ">= 1"
+
+        if(value.count() == 1)
+          build_count_condition = ">= 1"
+        elsif(value.count() == 2)
+          build_count_condition = ">= #{value[1]}"
+        elsif(value.count() == 3)
+          build_count_condition = "#{value[1]} #{value[2]}"
+        end
+
         associations.each_with_index do |association,key|
           if associations.length == 1
             foreign_key = @model_schema.reflections[association].foreign_key
             build_has_query += "(select count(*) from #{association}
-              where #{association}.#{foreign_key} = #{@model_table_name}.#{@model_schema.primary_key}) >= 1 "
+              where #{association}.#{foreign_key} = #{@model_table_name}.#{@model_schema.primary_key}) #{build_count_condition} "
           elsif key + 1 < associations.length
             if prev_table.empty?
               prev_table = @model_table_name
@@ -299,7 +309,7 @@ module Domain
             end
 
             new_has_query = "(select count(*) from #{association}
-              where #{association}.#{foreign_key} = #{prev_table}.id) >= 1 "
+              where #{association}.#{foreign_key} = #{prev_table}.id) #{build_count_condition} "
 
             build_has_query.gsub! "placeholder", new_has_query
           end
