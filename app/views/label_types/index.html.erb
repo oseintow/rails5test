@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Label Types</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Label</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @label_types.each do |label_type| %>
+      <tr>
+        <td><%= label_type.name %></td>
+        <td><%= label_type.label %></td>
+        <td><%= link_to 'Show', label_type %></td>
+        <td><%= link_to 'Edit', edit_label_type_path(label_type) %></td>
+        <td><%= link_to 'Destroy', label_type, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Label Type', new_label_type_path %>

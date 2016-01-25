@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :label_types
   resources :product_images
   resources :labels
   resources :posts, except: [:new, :edit]

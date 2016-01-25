@@ -262,51 +262,41 @@ module Domain
         associations.each_with_index do |association,key|
           if associations.length == 1
             foreign_key = @model_schema.reflections[association].foreign_key
-
-            # @model = @model.where("(select count(*) from #{association}
-            #   where #{association}.#{foreign_key} = #{@model_table_name}.#{@model_schema.primary_key}) >= 1 ")
-
             build_has_query += "(select count(*) from #{association}
               where #{association}.#{foreign_key} = #{@model_table_name}.#{@model_schema.primary_key}) >= 1 "
           elsif key + 1 < associations.length
+            if prev_table.empty?
+              prev_table = @model_table_name
+            end
             if key == 0
               foreign_key = @model_schema.reflections[association].foreign_key
               model_table_name = @model_table_name
             elsif
-              table_name = association.classify.singularize
+              table_name = prev_table.classify.singularize
               if Object.const_defined?(table_name) then
                 model_table_name = table_name.constantize
-                foreign_key = model_table_name.reflections[prev_table].foreign_key
+                foreign_key = model_table_name.reflections[association].foreign_key
                 table_name = table_name.constantize.arel_table
-                # @model = @model.eager_load(associations).where(table_name[args[1]].matches("#{args[2]}%"))
               end
             end
-
-            if prev_table.empty? then prev_table = @model_table_name end
-
 
             if key == 0
               build_has_query = "(select count(*) from #{association}
                 where #{association}.#{foreign_key} = #{prev_table}.id and placeholder) >= 1 "
             else
-
               new_has_query = "(select count(*) from #{association}
                 where #{association}.#{foreign_key} = #{prev_table}.id and placeholder) >= 1 "
-
               build_has_query.gsub! "placeholder", new_has_query
             end
           else
 
             table_name = prev_table.classify.singularize
-            Rails.logger.info table_name
-            Rails.logger.info prev_table
-            # if Object.const_defined?(table_name)
-              Rails.logger.info "asdfsafsadfsfa"
+            foreign_key = ""
+            if Object.const_defined?(table_name)
               model_table_name = table_name.constantize
               foreign_key = model_table_name.reflections[association].foreign_key
-              Rails.logger.info "sdfsdfa"
               # table_name = table_name.constantize.arel_table
-            # end
+            end
 
             new_has_query = "(select count(*) from #{association}
               where #{association}.#{foreign_key} = #{prev_table}.id) >= 1 "

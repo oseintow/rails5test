@@ -11,7 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160109224234) do
+ActiveRecord::Schema.define(version: 20160125052415) do
+
+  create_table "label_types", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "label_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["label_id"], name: "index_label_types_on_label_id"
+  end
 
   create_table "labels", force: :cascade do |t|
     t.string   "name"
