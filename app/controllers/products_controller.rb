@@ -10,6 +10,7 @@ class ProductsController < ApplicationController
 
 
   def index
+
     @products = @product.all(request)
 
     respond_to do |format|

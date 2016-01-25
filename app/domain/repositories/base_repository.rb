@@ -254,6 +254,84 @@ module Domain
         self
       end
 
+      def has(args)
+        value = args.split(",")
+        associations = value[0].split(".")
+        build_has_query = ""
+        prev_table = ""
+        associations.each_with_index do |association,key|
+          if associations.length == 1
+            foreign_key = @model_schema.reflections[association].foreign_key
+
+            # @model = @model.where("(select count(*) from #{association}
+            #   where #{association}.#{foreign_key} = #{@model_table_name}.#{@model_schema.primary_key}) >= 1 ")
+
+            build_has_query += "(select count(*) from #{association}
+              where #{association}.#{foreign_key} = #{@model_table_name}.#{@model_schema.primary_key}) >= 1 "
+          elsif key + 1 < associations.length
+            if key == 0
+              foreign_key = @model_schema.reflections[association].foreign_key
+              model_table_name = @model_table_name
+            elsif
+              table_name = association.classify.singularize
+              if Object.const_defined?(table_name) then
+                model_table_name = table_name.constantize
+                foreign_key = model_table_name.reflections[prev_table].foreign_key
+                table_name = table_name.constantize.arel_table
+                # @model = @model.eager_load(associations).where(table_name[args[1]].matches("#{args[2]}%"))
+              end
+            end
+
+            if prev_table.empty? then prev_table = @model_table_name end
+
+
+            if key == 0
+              build_has_query = "(select count(*) from #{association}
+                where #{association}.#{foreign_key} = #{prev_table}.id and placeholder) >= 1 "
+            else
+
+              new_has_query = "(select count(*) from #{association}
+                where #{association}.#{foreign_key} = #{prev_table}.id and placeholder) >= 1 "
+
+              build_has_query.gsub! "placeholder", new_has_query
+            end
+          else
+
+            table_name = prev_table.classify.singularize
+            Rails.logger.info table_name
+            Rails.logger.info prev_table
+            # if Object.const_defined?(table_name)
+              Rails.logger.info "asdfsafsadfsfa"
+              model_table_name = table_name.constantize
+              foreign_key = model_table_name.reflections[association].foreign_key
+              Rails.logger.info "sdfsdfa"
+              # table_name = table_name.constantize.arel_table
+            # end
+
+            new_has_query = "(select count(*) from #{association}
+              where #{association}.#{foreign_key} = #{prev_table}.id) >= 1 "
+
+            build_has_query.gsub! "placeholder", new_has_query
+          end
+          prev_table = association
+        end
+
+          @model = @model.where(build_has_query)
+        # @model = @model.joins( value[0].to_sym ).group("#{@model_table_name}.#{@model_schema.primary_key}")
+
+        # select * from `clients` where (select count(*) from `client_branches` where `client_branches`.`client_id` = `clients`.`id`) >= 1
+
+
+        # if(value.count() == 1)
+        #   @model = @model.having("count(#{value[0]}.#{foreign_key}) > 1")
+        # elsif(value.count() == 2)
+        #   @model = @model.having("count(#{value[0]}.#{foreign_key}) = #{value[1]}")
+        # elsif(value.count() == 3)
+        #   @model = @model.having("count(#{value[0]}.#{foreign_key}) #{value[1]} #{value[2]}")
+        # end
+        self
+      end
+
       def fields(value)
         value = value.split(",").each{|val| "#{@model_table_name}.#{val}" unless val.include?(".") }
         pri_key = "#{@model_table_name}.#{@model_schema.primary_key}"
@@ -298,7 +376,6 @@ module Domain
         end
 
         build_data(opts)
-
       end
 
       def build_data(opts = {})
